@@ -1,0 +1,43 @@
+<mat-card class="chat-container">
+  <mat-card-content #messageContainer class="message-container">
+    <div *ngIf="messages.length === 0" class="welcome-message message">
+      <div class="assistant welcome-content animate-welcome">
+        <div class="welcome-title animate-item">你好，我是哪吒 👋</div>
+        <div class="welcome-features">
+          <div class="animate-item">我可以：</div>
+          <ul>
+            <li class="animate-item">回答各种问题</li>
+            <li class="animate-item">帮你解决问题</li>
+            <li class="animate-item">协助文档编写</li>
+          </ul>
+          <div class="welcome-prompt animate-item">有什么我可以帮你的吗？</div>
+        </div>
+      </div>
+    </div>
+    <div *ngFor="let message of messages; let i = index" 
+         [ngClass]="{'user-message': message.role === 'user', 'assistant-message': message.role === 'assistant'}"
+         class="message">
+      <div [ngClass]="message.role">
+        <ng-container *ngIf="message.role === 'assistant' && loading && i === messages.length - 1">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </ng-container>
+        <markdown [data]="message.content"></markdown>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions class="input-container">
+    <mat-form-field appearance="outline" class="message-input">
+      <input matInput
+             [(ngModel)]="newMessage"
+             placeholder="输入消息..."
+             (keyup.enter)="sendMessage()">
+    </mat-form-field>
+    <button mat-flat-button 
+            color="primary"
+            [disabled]="loading"
+            (click)="sendMessage()">
+      发送
+    </button>
+  </mat-card-actions>
+</mat-card>

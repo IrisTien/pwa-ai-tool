@@ -52,4 +52,8 @@ body {
     @include mat.system-level-colors($dark-theme);
     @include mat.system-level-typography($dark-theme);
   }
+
+  @include mat.menu-overrides((
+    container-color: var(--sys-secondary-container),
+  ));
 }

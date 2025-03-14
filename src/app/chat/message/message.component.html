@@ -1,0 +1,19 @@
+<div class="message-content-wrapper" [class.user-message-wrapper]="message.role === 'user'">
+  <div class="message-header">
+    <div class="avatar-wrapper" [class.user-avatar]="message.role === 'user'">
+      <img [src]="message.role === 'user' ? 'assets/images/man.png' : 'assets/images/superhero.png'" 
+           class="avatar-icon" 
+           [alt]="message.role === 'user' ? '用户头像' : '助手头像'">
+    </div>
+    <span>{{ message.role === 'user' ? '你' : '哪吒' }}</span>
+  </div>
+  <div [ngClass]="{'user-message': message.role === 'user', 'assistant-message': message.role === 'assistant'}" 
+       class="message glass-effect">
+    <div [ngClass]="message.role">
+      <ng-container *ngIf="message.role === 'assistant' && loading && isLastMessage">
+        <mat-progress-bar mode="indeterminate" class="typing-indicator"></mat-progress-bar>
+      </ng-container>
+      <markdown [data]="message.content"></markdown>
+    </div>
+  </div>
+</div>

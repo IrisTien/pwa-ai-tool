@@ -1,9 +1,10 @@
 {
   "name": "哪吒",
   "short_name": "哪吒",
-  "theme_color": "#7d00fa",
+  "theme_color": "#fef8fc",
   "background_color": "#fafafa",
   "display": "standalone",
+  "display_override": ["window-controls-overlay"],
   "scope": "./",
   "start_url": "./",
   "icons": [

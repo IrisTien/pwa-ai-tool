@@ -1,43 +1,75 @@
 <mat-card class="chat-container">
   <mat-card-content #messageContainer class="message-container">
-    <div *ngIf="messages.length === 0" class="welcome-message message">
-      <div class="assistant welcome-content animate-welcome">
-        <div class="welcome-title animate-item">你好，我是哪吒 👋</div>
-        <div class="welcome-features">
-          <div class="animate-item">我可以：</div>
-          <ul>
-            <li class="animate-item">回答各种问题</li>
-            <li class="animate-item">帮你解决问题</li>
-            <li class="animate-item">协助文档编写</li>
-          </ul>
-          <div class="welcome-prompt animate-item">有什么我可以帮你的吗？</div>
-        </div>
-      </div>
+    <div *ngIf="messages.length === 0">
+      <app-welcome></app-welcome>
     </div>
     <div *ngFor="let message of messages; let i = index" 
-         [ngClass]="{'user-message': message.role === 'user', 'assistant-message': message.role === 'assistant'}"
-         class="message">
-      <div [ngClass]="message.role">
-        <ng-container *ngIf="message.role === 'assistant' && loading && i === messages.length - 1">
-          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        </ng-container>
-        <markdown [data]="message.content"></markdown>
-      </div>
+         [ngClass]="{'user-item': message.role === 'user', 'assistant-item': message.role === 'assistant'}" 
+         class="message-item-container">
+      <app-message 
+        [message]="message"
+        [loading]="loading"
+        [isLastMessage]="i === messages.length - 1">
+      </app-message>
     </div>
   </mat-card-content>
 
-  <mat-card-actions class="input-container">
-    <mat-form-field appearance="outline" class="message-input">
-      <input matInput
-             [(ngModel)]="newMessage"
-             placeholder="输入消息..."
-             (keyup.enter)="sendMessage()">
-    </mat-form-field>
-    <button mat-flat-button 
+  <mat-card-actions class="input-container glass-effect">
+    <div class="input-wrapper">
+      <!-- 添加静音按钮 -->
+      <div class="mute-button-container">
+        <button mat-icon-button
+          (click)="toggleMute()"
+          [matTooltip]="isMuted ? '取消静音' : '静音'"
+          class="assistant-button glass-effect">
+          <mat-icon class="assistant-icon">{{ isMuted ? 'volume_off' : 'volume_up' }}</mat-icon>
+          <div class="assistant-ripple"></div>
+        </button>
+      </div>
+
+      <div class="assistant-selector">
+        <button mat-icon-button
+                [matMenuTriggerFor]="assistantMenu"
+                [color]="'primary'"
+                class="assistant-button glass-effect">
+          <mat-icon class="assistant-icon">{{getSelectedAssistantIcon()}}</mat-icon>
+          <div class="assistant-ripple"></div>
+        </button>
+        <mat-menu #assistantMenu="matMenu" class="assistant-menu">
+          <div class="menu-header">选择助手类型</div>
+          <button mat-menu-item *ngFor="let type of assistantTypes" 
+                  (click)="selectedAssistantType = type.value; onAssistantTypeChange()"
+                  [class.active]="selectedAssistantType === type.value">
+            <mat-icon [class.selected]="selectedAssistantType === type.value">
+              {{type.icon}}
+            </mat-icon>
+            <div class="assistant-info">
+              <span class="assistant-name">{{type.name}}</span>
+              <span class="assistant-desc">{{type.description}}</span>
+            </div>
+          </button>
+        </mat-menu>
+      </div>
+      <mat-form-field appearance="outline" class="message-input">
+        <mat-icon matPrefix>chat</mat-icon>
+        <input matInput
+               [(ngModel)]="newMessage"
+               placeholder="有问题，尽管问"
+               (keyup.enter)="sendMessage()">
+        <button mat-icon-button matSuffix
+                (click)="toggleVoiceInput()"
+                [color]="isListening ? 'warn' : ''"
+                [matTooltip]="isListening ? '停止语音输入' : '开始语音输入'"
+                class="listen-button">
+          <mat-icon>{{isListening ? 'mic' : 'mic_none'}}</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+    <button mat-mini-fab
             color="primary"
             [disabled]="loading"
-            (click)="sendMessage()">
-      发送
+            (click)="sendMessage()" class="send-button">
+      <mat-icon class="send-button">send</mat-icon>
     </button>
   </mat-card-actions>
 </mat-card>
